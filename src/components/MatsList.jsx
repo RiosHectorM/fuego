@@ -5,16 +5,12 @@ import { Link } from "react-router-dom";
 
 function MatsList() {
   const mats = useSelector(state => state.mats)
-  console.log(mats)
-  
   const distpatch = useDispatch()
   
   const handleDelete = (id) => {
     distpatch(deleteMat(id))
   }
   
-  
-
   return (
     <div>
       <header>

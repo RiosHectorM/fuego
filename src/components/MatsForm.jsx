@@ -1,20 +1,21 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { addMat } from "../features/mats/matsSlice";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addMat, editMat } from "../features/mats/matsSlice";
 import { v4 as uuid } from "uuid";
-import { Navigate, useNavigate} from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function MatsForm() {
-
   const [mat, setMat] = useState({
-    material: '',
-    cantidad: '',
-    poderCal: '',
-    estado: false
-  })
+    material: "",
+    cantidad: "",
+    poderCal: "",
+    estado: false,
+  });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const params = useParams();
+  const materiales = useSelector(state => state.mats)
 
   const handleChange = (e) => {
     setMat({
@@ -25,37 +26,53 @@ function MatsForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(addMat({
-      ...mat,
-      id: uuid(),
-    }))
-    navigate("/")
-  }
+
+    if (params.id){
+      dispatch(editMat(mat))
+    }else{
+      dispatch(
+        addMat({
+          ...mat,
+          id: uuid(),
+        })
+    );
+    }
+    navigate("/");
+  };
+
+  useEffect(()=> {
+    console.log(params.id)
+    if (params.id) {
+      setMat(materiales.find(mat => mat.id === params.id));
+    }
+  },[])
 
   return (
     <form onSubmit={handleSubmit}>
-      <input 
+      <input
         name="material"
-        type="text" 
+        type="text"
         placeholder="Material..."
         onChange={handleChange}
-        />
-      <input 
+        value={mat.material}
+      />
+      <input
         name="cantidad"
-        type="text" 
+        type="text"
         placeholder="Cantidad en KG"
         onChange={handleChange}
-        />
-      <input 
+        value={mat.cantidad}
+      />
+      <input
         name="poderCal"
-        type="text" 
+        type="text"
         placeholder="Q"
         onChange={handleChange}
-        />
-        <button>Agregar</button>
+        value={mat.poderCal}
+      />
+      <button>Agregar</button>
     </form>
-
-  )
+  );
 }
 
-export default MatsForm
+export default MatsForm;
